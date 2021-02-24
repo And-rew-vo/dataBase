@@ -1,6 +1,6 @@
 const fs = require('fs');
 
-class DataBase {
+module.exports = class DataBase {
   constructor(dir) {
     this.__dirname = dir || 'dataBase';
     this.__dir = `./${this.__dirname}`;
@@ -292,4 +292,4 @@ class DataBase {
       this.error(e, 'delete');
     }
   }
-}
+};
