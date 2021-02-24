@@ -76,21 +76,23 @@ db.delete([users, cars]);
 #### Удаление таблицы
 ##### db.wipe(...tablesNames)
 ```js
-db.wipe('users', 'cars')
+db.wipe('users');
+//также возможно удаление нескольких таблиц в одном запросе
+db.wipe('users', 'cars');
 ```
 
 #### Полная очистка базы данных
 ```js
-db.nuke()
+db.nuke();
 ```
 
 #### Создание таблицы
 ```js
-db.createTable('users')
+db.createTable('users');
 ```
 
 #### Переименование таблицы
 ##### db.rename(tableNameFrom, tableNameTo)
 ```js
-db.rename('users', 'authorizedUsers')
+db.rename('users', 'authorizedUsers');
 ```
