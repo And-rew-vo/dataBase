@@ -171,7 +171,9 @@ module.exports = class DataBase {
               );
           }
         }
-        return obj !== undefined || null ? { obj, index, table } : {};
+
+        if (obj !== undefined || null) obj.__proto__ = { index, table };
+        return obj || {};
       } catch (e) {
         this.error(e, 'findOne');
       }
@@ -212,7 +214,8 @@ module.exports = class DataBase {
         }
 
         return obj.map((i, j) => {
-          return { obj: i, index: index[j], table: table };
+          i.__proto__ = { index: index[j], table };
+          return i;
         });
       } catch (e) {
         this.error(e, 'find');
@@ -226,7 +229,7 @@ module.exports = class DataBase {
       if (!Array.isArray(obj)) obj = [obj];
       obj = obj.flat();
       for (let i of obj) {
-        let tableName = i.table;
+        let tableName = i.__proto__.table;
         if (!filesStack[tableName]) {
           if (!this.findTable(tableName)) {
             this.error('no such table', 'set');
@@ -236,9 +239,9 @@ module.exports = class DataBase {
           }
         }
         let newData = Object.assign({}, data);
-        if (newData.__id != i.obj.__id) newData.__id = i.obj.__id;
-        if (newData.id != i.obj.id) newData.id = i.obj.id;
-        filesStack[tableName].table[i.index] = newData;
+        if (newData.__id != i.__id) newData.__id = i.__id;
+        if (newData.id != i.id) newData.id = i.id;
+        filesStack[tableName].table[i.__proto__.index] = newData;
         filesStack[tableName].__updatedAt = this.getDate();
       }
       Object.keys(filesStack).forEach((i) => this.write(i, filesStack[i]));
@@ -252,8 +255,8 @@ module.exports = class DataBase {
       if (!Array.isArray(obj)) obj = [obj];
       obj = obj.flat();
       let newObj = obj.map((i) => {
-        Object.keys(data).map((o) => (i.obj[o] = data[o]));
-        return i.obj;
+        Object.keys(data).map((o) => (i[o] = data[o]));
+        return i;
       });
       for (let i in obj) {
         this.set(obj[i], newObj[i]);
@@ -269,7 +272,7 @@ module.exports = class DataBase {
       if (!Array.isArray(obj)) obj = [obj];
       obj = obj.flat();
       for (let i of obj) {
-        let tableName = i.table;
+        let tableName = i.__proto__.table;
         if (!filesStack[tableName]) {
           if (!this.findTable(tableName)) {
             this.error('no such table', 'delete');
@@ -279,7 +282,7 @@ module.exports = class DataBase {
           }
         }
         let file = filesStack[tableName];
-        delete file.table[i.index];
+        delete file.table[i.__proto__.index];
         file.__updatedAt = this.getDate();
       }
       Object.keys(filesStack).forEach((i) => {
