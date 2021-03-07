@@ -258,7 +258,7 @@ module.exports = class DataBase {
         Object.keys(data).map((o) => (i[o] = data[o]));
         return i;
       });
-      for (let i in obj) {
+      for (let i = 0; i < obj.length; i++) {
         this.set(obj[i], newObj[i]);
       }
     } catch (e) {
